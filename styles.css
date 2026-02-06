@@ -117,57 +117,7 @@ body[data-focus-shield="focus"]::before {
   z-index: 999999;
   font-family: system-ui, -apple-system, sans-serif;
 }
-
-/* Make the web feel calmer when Focus Shield is active */
-body[data-focus-shield] {
-  background: #f5f5f5 !important;
-}
-/* Focus-mode: highlight news/relevant content */
-body[data-focus-shield="focus"] * {
-  transition: opacity .18s ease, filter .18s ease;
-  opacity: 0.35 !important;
-  filter: none !important;
-  pointer-events: none !important;
-}
-
-body[data-focus-shield="focus"] article,
-body[data-focus-shield="focus"] .article,
-body[data-focus-shield="focus"] .post,
-body[data-focus-shield="focus"] .story,
-body[data-focus-shield="focus"] .news,
-body[data-focus-shield="focus"] .headline,
-body[data-focus-shield="focus"] .relevant,
-body[data-focus-shield="focus"] h1,
-body[data-focus-shield="focus"] h2,
-body[data-focus-shield="focus"] h3,
-body[data-focus-shield="focus"] p {
-  opacity: 1 !important;
-  pointer-events: auto !important;
-  background: linear-gradient(90deg, rgba(255,250,230,0.95), rgba(255,255,255,0.6)) !important;
-  border-left: 6px solid #ffb400 !important;
-  padding-left: 12px !important;
-  box-shadow: 0 6px 24px rgba(0,0,0,0.08) !important;
-  transform: translateZ(0);
-}
-
-/* Emphasize headlines & links */
-body[data-focus-shield="focus"] h1, body[data-focus-shield="focus"] h2, body[data-focus-shield="focus"] h3, body[data-focus-shield="focus"] .headline {
-  color: #222 !important;
-  font-weight: 700 !important;
-  text-shadow: 0 1px 0 rgba(255,255,255,0.5);
-}
-body[data-focus-shield="focus"] a {
-  color: #0b63d6 !important;
-  text-decoration: underline !important;
-}
-
-/* Optional: hide common distracting UI when focus active */
-body[data-focus-shield="focus"] nav,
-body[data-focus-shield="focus"] header,
-body[data-focus-shield="focus"] footer,
-body[data-focus-shield="focus"] .sidebar,
-body[data-focus-shield="focus"] .ad,
-body[data-focus-shield="focus"] [role="complementary"],
-body[data-focus-shield="focus"] [aria-label*="sidebar"] {
-  display: none !important;
-}
+/* Focus Shield dimming removed: reverted to avoid blanking sites.
+   If you want a safer dimming later, consider using
+   `body[data-focus-shield="focus"] :not(.focus-shield-highlighted)`
+   with only `opacity` changes (no `pointer-events:none`). */
