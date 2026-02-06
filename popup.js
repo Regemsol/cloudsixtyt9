@@ -9,6 +9,10 @@ function setActive(mode) {
   if (mode === 'simple') simpleBtn.classList.add('active');
   if (mode === 'focus') focusBtn.classList.add('active');
   if (mode === 'normal') normalBtn.classList.add('active');
+  // Update aria-pressed for accessibility
+  simpleBtn.setAttribute('aria-pressed', mode === 'simple');
+  focusBtn.setAttribute('aria-pressed', mode === 'focus');
+  normalBtn.setAttribute('aria-pressed', mode === 'normal');
 }
 
 function sendAction(action, mode) {
@@ -39,6 +43,16 @@ function sendAction(action, mode) {
 simpleBtn.addEventListener('click', () => sendAction('simpleMode', 'simple'));
 focusBtn.addEventListener('click', () => sendAction('focusMode', 'focus'));
 normalBtn.addEventListener('click', () => sendAction('normalMode', 'normal'));
+
+// Keyboard support: Space or Enter triggers button
+[simpleBtn, focusBtn, normalBtn].forEach(btn => {
+  btn.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      btn.click();
+    }
+  });
+});
 
 openReadme.addEventListener('click', (e) => {
   e.preventDefault();

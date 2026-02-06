@@ -2,107 +2,62 @@
 <html>
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Focus Shield</title>
   <style>
-    body {
-      width: 300px;
-      padding: 20px;
-      font-family: system-ui, -apple-system, sans-serif;
-      margin: 0;
-    }
-    
-    h1 {
-      font-size: 18px;
-      margin: 0 0 15px 0;
-      color: #333;
-    }
-    
-    .subtitle {
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="UTF-8">
-        <style>
-          body {
-            width: 340px;
-            padding: 18px;
-            font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-            margin: 0;
-            background: #f7f9fb;
-          }
+    :root{--bg:#f7f9fb;--card:#ffffff;--muted:#6b7280;--accent:#2196F3;--green:#4CAF50}
+    body { width: 360px; padding: 14px; font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial; margin: 0; background: var(--bg); color:#111827; -webkit-font-smoothing:antialiased; }
+    .card { background: var(--card); border-radius:12px; padding:14px; box-shadow: 0 8px 24px rgba(15,23,42,0.06); }
+    .header { display: flex; gap: 12px; align-items: center; margin-bottom: 6px; }
+    .logo { width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--green)0%,var(--accent)100%);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:700 }
+    h1 { font-size: 16px; margin: 0; color: #111827 }
+    .subtitle { font-size: 12px; color: #6b7280; margin-top: 2px }
+    .controls { margin-top: 12px; display:flex;flex-direction:column; gap:10px; }
+    button { width: 100%; padding: 12px 14px; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; transition: transform .12s ease, box-shadow .12s ease; font-weight: 600; display:flex;align-items:center;gap:10px;justify-content:flex-start }
+    button{outline: none}
+    button:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(17,24,39,0.06); }
+    button:active { transform: translateY(0); }
+    button:focus { box-shadow: 0 0 0 4px rgba(33,150,243,0.08); }
+    .btn-icon { width:20px;height:20px;display:inline-block;text-align:center }
+    #simpleBtn { background: var(--green); color: white; }
+    #focusBtn { background: var(--accent); color: white; }
+    #normalBtn { background: #fff; color: #111827; border: 1px solid #eef2f6; }
+    .btn-small { font-size:13px; padding:10px 12px }
+    .active { box-shadow: 0 6px 18px rgba(33,150,243,0.12); transform: translateY(-2px); }
+    .muted { opacity: 0.9; font-weight:500 }
+    .info { margin-top:12px; padding:0; background:transparent; border-radius:6px; font-size:12px; color:var(--muted) }
+    .footer { margin-top:12px; font-size:12px; color:#9ca3af; display:flex;justify-content:space-between; align-items:center }
+    .small-link { color:var(--accent); text-decoration:none }
+    .meta { font-size:11px; color:#9ca3af }
+    .version { color:#c7cdd6; font-size:11px }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <div class="logo">FS</div>
+      <div>
+        <h1>Focus Shield</h1>
+        <div class="subtitle">A calmer web for neurodiverse users</div>
+      </div>
+    </div>
 
-          .header {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            margin-bottom: 10px;
-          }
+    <div class="controls">
+      <button id="simpleBtn" class="btn-small" aria-pressed="false" title="Show short key points and remove ads"><span class="btn-icon">📝</span><span>Simple — summary + ad removal</span></button>
+      <button id="focusBtn" class="btn-small" aria-pressed="false" title="Highlight main content and block ads"><span class="btn-icon">🎯</span><span>Focus — highlight + block ads</span></button>
+      <button id="normalBtn" class="btn-small" aria-pressed="false" title="Return to normal view"><span class="btn-icon">↩️</span><span>Normal</span></button>
+    </div>
 
-          .logo {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            background: linear-gradient(135deg,#4CAF50 0%, #2196F3 100%);
-            display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:700;
-          }
+    <div class="info muted">
+      Tip: <strong>Simple</strong> = quick reading + highlights; <strong>Focus</strong> = distraction-free.
+    </div>
 
-          h1 { font-size: 16px; margin: 0; color: #111; }
+    <div class="footer">
+      <a class="small-link" href="#" id="openReadme">Help</a>
+      <div class="meta version">v1.0</div>
+    </div>
+  </div>
 
-          .subtitle { font-size: 12px; color: #666; margin-top: 2px; }
-
-          .controls { margin-top: 12px; display:flex;flex-direction:column; gap:10px; }
-
-          button {
-            width: 100%;
-            padding: 12px 14px;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: transform .12s ease, box-shadow .12s ease;
-            font-weight: 600;
-            display:flex;align-items:center;gap:10px;justify-content:center;
-          }
-
-          button:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(15,23,42,0.08); }
-          button:active { transform: translateY(0); }
-          .btn-icon { width:18px;height:18px;display:inline-block;text-align:center }
-
-          #simpleBtn { background: #4CAF50; color: white; }
-          #focusBtn { background: #2196F3; color: white; }
-          #normalBtn { background: #fff; color: #333; border: 1px solid #e6e9ee; }
-
-          .btn-small { font-size:13px; padding:10px 12px }
-          .active { box-shadow: 0 6px 18px rgba(33,150,243,0.12); transform: translateY(-2px); }
-          .muted { opacity: 0.9; font-weight:500 }
-
-          .info { margin-top:14px; padding:10px; background:#fff; border-radius:8px; border:1px solid #eef2f6; font-size:12px; color:#444 }
-          .footer { margin-top:12px; font-size:12px; color:#888; display:flex;justify-content:space-between; align-items:center }
-          .small-link { color:#2196F3; text-decoration:none }
-        </style>
-      </head>
-      <body>
-        <div class="header">
-          <div class="logo">FS</div>
-          <div>
-            <h1>Focus Shield</h1>
-            <div class="subtitle">A calmer web for neurodiverse users</div>
-          </div>
-        </div>
-  
-        <div class="controls">
-          <button id="simpleBtn" class="btn-small" aria-label="Simple Mode"><span class="btn-icon">📝</span> Simple Mode — summary + ad removal</button>
-          <button id="focusBtn" class="btn-small" aria-label="Focus Mode"><span class="btn-icon">🎯</span> Focus Mode — highlight content + block ads</button>
-          <button id="normalBtn" class="btn-small" aria-label="Normal Mode"><span class="btn-icon">↩️</span> Normal Mode</button>
-        </div>
-
-        <div class="info muted">
-          Tip: Use <strong>Simple</strong> for quick summaries, <strong>Focus</strong> to read distraction-free.
-        </div>
-        <div class="footer">
-          <a class="small-link" href="#" id="openReadme">Help</a>
-          <span style="color:#bbb">v1.0</span>
-        </div>
-  
-        <script src="popup.js"></script>
-      </body>
-      </html>
+  <script src="popup.js"></script>
+</body>
+</html>
