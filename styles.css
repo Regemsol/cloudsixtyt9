@@ -117,7 +117,55 @@ body[data-focus-shield="focus"]::before {
   z-index: 999999;
   font-family: system-ui, -apple-system, sans-serif;
 }
-/* Focus Shield dimming removed: reverted to avoid blanking sites.
-   If you want a safer dimming later, consider using
-   `body[data-focus-shield="focus"] :not(.focus-shield-highlighted)`
-   with only `opacity` changes (no `pointer-events:none`). */
+/* Focus Shield: safe dimming and selective ad-hiding.
+   - Dim non-highlighted content but keep it interactive.
+   - Keep highlighted items fully visible and interactive.
+   - Hide common ad containers only. */
+
+body[data-focus-shield="focus"] {
+  background: #f5f5f5 !important;
+}
+
+/* Dim everything except explicitly highlighted or exempt elements. */
+body[data-focus-shield="focus"] :not(.focus-shield-highlighted):not(.focus-shield-summary):not([data-focus-shield-exempt]) {
+  transition: opacity .18s ease, filter .18s ease;
+  opacity: 0.5 !important;
+  filter: none !important;
+  pointer-events: auto !important;
+}
+
+/* Highlighted / exempt elements remain fully visible and interactive. */
+body[data-focus-shield="focus"] .focus-shield-highlighted,
+body[data-focus-shield="focus"] [data-focus-shield-exempt] {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  transform: translateZ(0);
+}
+
+/* Emphasize headlines & links only inside highlighted elements */
+body[data-focus-shield="focus"] .focus-shield-highlighted h1,
+body[data-focus-shield="focus"] .focus-shield-highlighted h2,
+body[data-focus-shield="focus"] .focus-shield-highlighted h3,
+body[data-focus-shield="focus"] .focus-shield-highlighted .headline {
+  color: #222 !important;
+  font-weight: 700 !important;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+}
+body[data-focus-shield="focus"] .focus-shield-highlighted a {
+  color: #0b63d6 !important;
+  text-decoration: underline !important;
+}
+
+/* Selective ad/harmful UI hiding while focus is active */
+body[data-focus-shield="focus"] .ad,
+body[data-focus-shield="focus"] .ads,
+body[data-focus-shield="focus"] [data-ad],
+body[data-focus-shield="focus"] [id^="ad-"],
+body[data-focus-shield="focus"] [class*="-ad"],
+body[data-focus-shield="focus"] [class*="ad-"],
+body[data-focus-shield="focus"] [class*="advert"],
+body[data-focus-shield="focus"] [aria-label*="ad"],
+body[data-focus-shield="focus"] .banner-ad,
+body[data-focus-shield="focus"] .sidebar-ad {
+  display: none !important;
+}
