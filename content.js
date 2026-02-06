@@ -5,12 +5,13 @@ console.log("Focus Shield is active!");
 
 let mutationObserver = null;
 let currentMode = null;
+let summaryElement = null;
 
 // Listen for messages from the popup (when user clicks buttons)
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   try {
-    if (request.action === "simplifyMode") {
-      activateSimplifyMode();
+    if (request.action === "simpleMode") {
+      activateSimpleMode();
     } else if (request.action === "focusMode") {
       activateFocusMode();
     } else if (request.action === "normalMode") {
@@ -23,10 +24,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 });
 
-// SIMPLIFY MODE: Remove ads, popups, and clutter
-function activateSimplifyMode() {
-  console.log("Simplify Mode activated");
-  currentMode = "simplify";
+// SIMPLE MODE: Remove ads + show content summary
+function activateSimpleMode() {
+  console.log("Simple Mode activated");
+  currentMode = "simple";
   
   // Common selectors for ads and distracting elements
   const distractingSelectors = [
@@ -110,58 +111,66 @@ function activateSimplifyMode() {
     }
   });
   
-  console.log(`Simplify Mode: Hidden ${hiddenCount} distracting elements`);
+  console.log(`Simple Mode: Hidden ${hiddenCount} distracting elements`);
   
-  // Store that we're in simplify mode
-  document.body.setAttribute('data-focus-shield', 'simplify');
+  // Generate and display a summary
+  generateAndDisplaySummary();
+  
+  // Store that we're in simple mode
+  document.body.setAttribute('data-focus-shield', 'simple');
   
   // Start watching for new ads injected dynamically
   startMutationObserver();
 }
 
-// FOCUS MODE: Only show the main content (article, video, etc.)
+// FOCUS MODE: Only removes ads (clean reading)
 function activateFocusMode() {
   console.log("Focus Mode activated");
   currentMode = "focus";
   
-  // First, do everything simplify mode does
-  activateSimplifyMode();
-  
-  // Try to find the main content
-  const mainContentSelectors = [
-    'main',
-    'article',
-    '[role="main"]',
-    '.post-content',
-    '.article-content',
-    '#content',
-    '.content'
+  // Just hide ads and distracting elements
+  const ads = [
+    '[class*="ad-"]',
+    '[class*="ad_"]',
+    '[class*="_ad"]',
+    '[class*="ads"]',
+    '[id*="ad-"]',
+    '[id*="ad_"]',
+    '[id*="_ad"]',
+    '[class*="advertisement"]',
+    '[class*="adsbygoogle"]',
+    '[class*="banner"]',
+    '[class*="sponsor"]',
+    '[data-ad-client]',
+    '[data-ad-slot]',
+    '[data-ad-format]',
+    '[data-adsbygoogle]',
+    'iframe[src*="ads"]',
+    'iframe[src*="doubleclick"]',
+    'iframe[src*="googlesyndication"]',
+    'iframe[src*="facebook.com/plugins"]',
+    'iframe[src*="googletagmanager"]',
+    'iframe[src*="pagead"]'
   ];
   
-  let mainContent = null;
-  for (let selector of mainContentSelectors) {
-    mainContent = document.querySelector(selector);
-    if (mainContent) break;
-  }
-  
-  if (mainContent) {
-    // Hide everything except the main content and header
-    const allElements = document.body.children;
-    for (let element of allElements) {
-      if (!element.contains(mainContent) && element.tagName !== 'HEADER') {
+  let hiddenCount = 0;
+  ads.forEach(selector => {
+    try {
+      const elements = document.querySelectorAll(selector);
+      elements.forEach(element => {
         element.classList.add('focus-shield-hidden');
-      }
+        hiddenCount++;
+      });
+    } catch (e) {
+      // Invalid selector, skip
     }
-    
-    // Make the main content more readable
-    if (mainContent) {
-      mainContent.style.maxWidth = '700px';
-      mainContent.style.margin = '0 auto';
-      mainContent.style.padding = '20px';
-    }
-  }
+  });
   
+  console.log(`Focus Mode: Hidden ${hiddenCount} ads`);
   document.body.setAttribute('data-focus-shield', 'focus');
+  
+  // Start watching for new ads
+  startMutationObserver();
 }
 
 // NORMAL MODE: Show everything again
@@ -178,12 +187,10 @@ function deactivateAllModes() {
     element.classList.remove('focus-shield-hidden');
   });
   
-  // Reset main content styles from focus mode
-  const mainContent = document.querySelector('main, article, [role="main"], .post-content, .article-content, #content, .content');
-  if (mainContent) {
-    mainContent.style.maxWidth = '';
-    mainContent.style.margin = '';
-    mainContent.style.padding = '';
+  // Remove summary if it exists
+  if (summaryElement && summaryElement.parentNode) {
+    summaryElement.remove();
+    summaryElement = null;
   }
   
   document.body.removeAttribute('data-focus-shield');
@@ -197,7 +204,7 @@ function startMutationObserver() {
     // Rerun ad hiding on mutations (but throttle to avoid performance issues)
     clearTimeout(window.focusShieldTimeout);
     window.focusShieldTimeout = setTimeout(() => {
-      if (currentMode === 'simplify' || currentMode === 'focus') {
+      if (currentMode === 'simple' || currentMode === 'focus') {
         hideAds();
       }
     }, 500);
@@ -263,6 +270,41 @@ function hideAds() {
   });
 }
 
-// Auto-activate simplify mode on page load (you can change this)
-// Comment out this line if you don't want auto-activation
-// activateSimplifyMode();
+// Generate and display a summary of the page content
+function generateAndDisplaySummary() {
+  try {
+    // Remove old summary if exists
+    if (summaryElement && summaryElement.parentNode) {
+      summaryElement.remove();
+    }
+    
+    // Find main content
+    const mainContent = document.querySelector('main, article, [role="main"], .post-content, .article-content, #content, .content');
+    const contentText = mainContent ? mainContent.innerText : document.body.innerText;
+    
+    if (!contentText) return;
+    
+    // Extract sentences and create summary
+    const sentences = contentText.match(/[^.!?]+[.!?]+(?=\s+|$)/g) || [];
+    const summaryLength = Math.ceil(sentences.length * 0.3); // 30% of content
+    const summaryText = sentences.slice(0, Math.max(3, summaryLength)).join(' ').trim();
+    
+    if (summaryText.length < 50) return; // Too short to summarize
+    
+    // Create summary box
+    summaryElement = document.createElement('div');
+    summaryElement.className = 'focus-shield-summary';
+    summaryElement.innerHTML = `
+      <div class="summary-header">
+        <strong>📝 Content Summary</strong>
+        <button class="close-summary" onclick="this.parentElement.parentElement.remove()">✕</button>
+      </div>
+      <div class="summary-content">${summaryText}...</div>
+    `;
+    
+    document.body.insertBefore(summaryElement, document.body.firstChild);
+    console.log("Focus Shield: Summary generated");
+  } catch (error) {
+    console.error("Focus Shield: Error generating summary", error);
+  }
+}
