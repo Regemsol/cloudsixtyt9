@@ -4,19 +4,36 @@
 document.getElementById('simplifyBtn').addEventListener('click', () => {
   // Get the current active tab
   chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-    // Send message to content.js on that tab
-    chrome.tabs.sendMessage(tabs[0].id, {action: "simplifyMode"});
+    if (tabs[0]?.id) {
+      chrome.tabs.sendMessage(tabs[0].id, {action: "simplifyMode"}, (response) => {
+        if (chrome.runtime.lastError) {
+          console.log("Could not inject on this tab:", chrome.runtime.lastError.message);
+        }
+      });
+    }
   });
 });
 
 document.getElementById('focusBtn').addEventListener('click', () => {
   chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-    chrome.tabs.sendMessage(tabs[0].id, {action: "focusMode"});
+    if (tabs[0]?.id) {
+      chrome.tabs.sendMessage(tabs[0].id, {action: "focusMode"}, (response) => {
+        if (chrome.runtime.lastError) {
+          console.log("Could not inject on this tab:", chrome.runtime.lastError.message);
+        }
+      });
+    }
   });
 });
 
 document.getElementById('normalBtn').addEventListener('click', () => {
   chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-    chrome.tabs.sendMessage(tabs[0].id, {action: "normalMode"});
+    if (tabs[0]?.id) {
+      chrome.tabs.sendMessage(tabs[0].id, {action: "normalMode"}, (response) => {
+        if (chrome.runtime.lastError) {
+          console.log("Could not inject on this tab:", chrome.runtime.lastError.message);
+        }
+      });
+    }
   });
 });
