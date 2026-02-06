@@ -1,7 +1,8 @@
 // This script runs on EVERY webpage you visit
 // It's job is to find and hide distracting elements
 
-console.log("Focus Shield is active!");
+console.log("🛡️ Focus Shield content script loaded on:", window.location.href);
+console.log("⚠️ Focus Shield is INACTIVE - waiting for user to click a button");
 
 let mutationObserver = null;
 let currentMode = null;
@@ -9,12 +10,16 @@ let summaryElement = null;
 
 // Listen for messages from the popup (when user clicks buttons)
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  console.log("📨 Focus Shield received message:", request);
   try {
     if (request.action === "simpleMode") {
+      console.log("✅ Activating Simple Mode");
       activateSimpleMode();
     } else if (request.action === "focusMode") {
+      console.log("✅ Activating Focus Mode");
       activateFocusMode();
     } else if (request.action === "normalMode") {
+      console.log("✅ Deactivating all modes");
       deactivateAllModes();
     }
     sendResponse({status: "success"});
@@ -202,25 +207,31 @@ function activateFocusMode() {
 
 // NORMAL MODE: Show everything again
 function deactivateAllModes() {
-  console.log("Back to normal mode");
+  console.log("🔄 Deactivating all modes - returning to normal");
   currentMode = null;
   
   // Stop watching for new elements
   stopMutationObserver();
   
-  // Remove all our hiding classes
+  // Remove ALL our modifications
   const hiddenElements = document.querySelectorAll('.focus-shield-hidden');
   hiddenElements.forEach(element => {
     element.classList.remove('focus-shield-hidden');
   });
   
-  // Remove summary if it exists
+  // Remove summary box
   if (summaryElement && summaryElement.parentNode) {
     summaryElement.remove();
     summaryElement = null;
   }
   
+  // Remove the data attribute completely
   document.body.removeAttribute('data-focus-shield');
+  
+  // Reset background
+  document.body.style.background = '';
+  
+  console.log("✅ Normal mode activated - all Focus Shield modifications removed");
 }
 
 // MutationObserver to catch dynamically-injected ads

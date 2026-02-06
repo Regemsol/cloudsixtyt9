@@ -2,12 +2,16 @@
 // It sends messages to content.js to activate different modes
 
 document.getElementById('simpleBtn').addEventListener('click', () => {
-  // Get the current active tab
+  console.log("Simple button clicked");
   chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+    console.log("Active tab:", tabs[0]);
     if (tabs[0]?.id) {
       chrome.tabs.sendMessage(tabs[0].id, {action: "simpleMode"}, (response) => {
         if (chrome.runtime.lastError) {
-          console.log("Could not inject on this tab:", chrome.runtime.lastError.message);
+          console.error("Message error:", chrome.runtime.lastError);
+          alert("Error: " + chrome.runtime.lastError.message);
+        } else {
+          console.log("Message sent successfully", response);
         }
       });
     }
@@ -15,11 +19,16 @@ document.getElementById('simpleBtn').addEventListener('click', () => {
 });
 
 document.getElementById('focusBtn').addEventListener('click', () => {
+  console.log("Focus button clicked");
   chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+    console.log("Active tab:", tabs[0]);
     if (tabs[0]?.id) {
       chrome.tabs.sendMessage(tabs[0].id, {action: "focusMode"}, (response) => {
         if (chrome.runtime.lastError) {
-          console.log("Could not inject on this tab:", chrome.runtime.lastError.message);
+          console.error("Message error:", chrome.runtime.lastError);
+          alert("Error: " + chrome.runtime.lastError.message);
+        } else {
+          console.log("Message sent successfully", response);
         }
       });
     }
@@ -27,11 +36,16 @@ document.getElementById('focusBtn').addEventListener('click', () => {
 });
 
 document.getElementById('normalBtn').addEventListener('click', () => {
+  console.log("Normal button clicked");
   chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+    console.log("Active tab:", tabs[0]);
     if (tabs[0]?.id) {
       chrome.tabs.sendMessage(tabs[0].id, {action: "normalMode"}, (response) => {
         if (chrome.runtime.lastError) {
-          console.log("Could not inject on this tab:", chrome.runtime.lastError.message);
+          console.error("Message error:", chrome.runtime.lastError);
+          alert("Error: " + chrome.runtime.lastError.message);
+        } else {
+          console.log("Message sent successfully", response);
         }
       });
     }
