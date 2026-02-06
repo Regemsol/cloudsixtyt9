@@ -1,0 +1,29 @@
+/* This class hides elements that are distracting */
+.focus-shield-hidden {
+  display: none !important;
+}
+
+/* Optional: Add a subtle indicator that Focus Shield is active */
+body[data-focus-shield="simplify"]::before {
+  content: "🛡️ Simplify Mode Active";
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background: #4CAF50;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  z-index: 999999;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+body[data-focus-shield="focus"]::before {
+  content: "🎯 Focus Mode Active";
+  background: #2196F3;
+}
+
+/* Make the web feel calmer when Focus Shield is active */
+body[data-focus-shield] {
+  background: #f5f5f5 !important;
+}
