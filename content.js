@@ -80,10 +80,14 @@ class DistractingElementDetector {
   
   // Analyze a single class/id for distracting patterns
   analyzeClassOrId(classOrId, category = null) {
-    if (!classOrId || classOrId.length === 0) return 0;
+    if (!classOrId) return 0;
+    
+    // Ensure classOrId is a string
+    const classOrIdStr = String(classOrId);
+    if (classOrIdStr.length === 0) return 0;
     
     let score = 0;
-    const words = classOrId.toLowerCase().split(/[-_\s]/);
+    const words = classOrIdStr.toLowerCase().split(/[-_\s]/);
     
     // Check against all distracting patterns
     for (let [distCategory, patterns] of Object.entries(this.distractingPatterns)) {
