@@ -1,53 +1,46 @@
-// This code runs when you click the extension icon
-// It sends messages to content.js to activate different modes
+// Popup interaction logic
+const simpleBtn = document.getElementById('simpleBtn');
+const focusBtn = document.getElementById('focusBtn');
+const normalBtn = document.getElementById('normalBtn');
+const openReadme = document.getElementById('openReadme');
 
-document.getElementById('simpleBtn').addEventListener('click', () => {
-  console.log("Simple button clicked");
-  chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-    console.log("Active tab:", tabs[0]);
-    if (tabs[0]?.id) {
-      chrome.tabs.sendMessage(tabs[0].id, {action: "simpleMode"}, (response) => {
-        if (chrome.runtime.lastError) {
-          console.error("Message error:", chrome.runtime.lastError);
-          alert("Error: " + chrome.runtime.lastError.message);
-        } else {
-          console.log("Message sent successfully", response);
-        }
-      });
-    }
-  });
-});
+function setActive(mode) {
+  [simpleBtn, focusBtn, normalBtn].forEach(b => b.classList.remove('active'));
+  if (mode === 'simple') simpleBtn.classList.add('active');
+  if (mode === 'focus') focusBtn.classList.add('active');
+  if (mode === 'normal') normalBtn.classList.add('active');
+}
 
-document.getElementById('focusBtn').addEventListener('click', () => {
-  console.log("Focus button clicked");
+function sendAction(action, mode) {
+  // disable while sending
+  [simpleBtn, focusBtn, normalBtn].forEach(b => b.disabled = true);
   chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-    console.log("Active tab:", tabs[0]);
-    if (tabs[0]?.id) {
-      chrome.tabs.sendMessage(tabs[0].id, {action: "focusMode"}, (response) => {
-        if (chrome.runtime.lastError) {
-          console.error("Message error:", chrome.runtime.lastError);
-          alert("Error: " + chrome.runtime.lastError.message);
-        } else {
-          console.log("Message sent successfully", response);
-        }
-      });
+    if (!tabs || !tabs[0] || !tabs[0].id) {
+      alert('No active tab found');
+      [simpleBtn, focusBtn, normalBtn].forEach(b => b.disabled = false);
+      return;
     }
+    chrome.tabs.sendMessage(tabs[0].id, {action}, (response) => {
+      [simpleBtn, focusBtn, normalBtn].forEach(b => b.disabled = false);
+      if (chrome.runtime.lastError) {
+        console.error('Message error:', chrome.runtime.lastError);
+        alert('Error: ' + chrome.runtime.lastError.message + '\nMake sure the page is reloaded.');
+        return;
+      }
+      if (response && response.status === 'success') {
+        setActive(mode);
+      } else {
+        console.log('Response:', response);
+      }
+    });
   });
-});
+}
 
-document.getElementById('normalBtn').addEventListener('click', () => {
-  console.log("Normal button clicked");
-  chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-    console.log("Active tab:", tabs[0]);
-    if (tabs[0]?.id) {
-      chrome.tabs.sendMessage(tabs[0].id, {action: "normalMode"}, (response) => {
-        if (chrome.runtime.lastError) {
-          console.error("Message error:", chrome.runtime.lastError);
-          alert("Error: " + chrome.runtime.lastError.message);
-        } else {
-          console.log("Message sent successfully", response);
-        }
-      });
-    }
-  });
+simpleBtn.addEventListener('click', () => sendAction('simpleMode', 'simple'));
+focusBtn.addEventListener('click', () => sendAction('focusMode', 'focus'));
+normalBtn.addEventListener('click', () => sendAction('normalMode', 'normal'));
+
+openReadme.addEventListener('click', (e) => {
+  e.preventDefault();
+  chrome.tabs.create({url: 'https://github.com/Regemsol/cloudsixtyt9'});
 });
