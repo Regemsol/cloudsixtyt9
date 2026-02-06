@@ -147,6 +147,7 @@ function activateFocusMode() {
   console.log("Focus Mode activated");
   
   // Clean up any previous mode
+  stopMutationObserver();
   if (summaryElement && summaryElement.parentNode) {
     summaryElement.remove();
     summaryElement = null;
@@ -160,8 +161,9 @@ function activateFocusMode() {
   
   currentMode = "focus";
   
-  // Just hide ads and distracting elements
+  // Comprehensive ad selector list - catches all ads on the page
   const ads = [
+    // Ads - more aggressive matching
     '[class*="ad-"]',
     '[class*="ad_"]',
     '[class*="_ad"]',
@@ -182,7 +184,28 @@ function activateFocusMode() {
     'iframe[src*="googlesyndication"]',
     'iframe[src*="facebook.com/plugins"]',
     'iframe[src*="googletagmanager"]',
-    'iframe[src*="pagead"]'
+    'iframe[src*="pagead"]',
+    'script[src*="ads"]',
+    'script[src*="advertisement"]',
+    '[class*="advert"]',
+    '[class*="advertising"]',
+    '[class*="promoted"]',
+    '[class*="promote"]',
+    '[class*="promotional"]',
+    '[class*="promo"]',
+    
+    // Popups and modals (some ads appear as modals)
+    '[class*="modal"]',
+    '[class*="popup"]',
+    '[class*="overlay"]',
+    '[class*="notification"]',
+    '[class*="toast"]',
+    
+    // Social media widgets
+    '[class*="social-share"]',
+    '[class*="share-button"]',
+    '[class*="shareicon"]',
+    '[class*="social"]'
   ];
   
   let hiddenCount = 0;
@@ -198,7 +221,7 @@ function activateFocusMode() {
     }
   });
   
-  console.log(`Focus Mode: Hidden ${hiddenCount} ads`);
+  console.log(`✅ Focus Mode: Hidden ${hiddenCount} ads`);
   document.body.setAttribute('data-focus-shield', 'focus');
   
   // Start watching for new ads
@@ -292,7 +315,24 @@ function hideAds() {
     'iframe[src*="googlesyndication"]',
     'iframe[src*="facebook.com/plugins"]',
     'iframe[src*="googletagmanager"]',
-    'iframe[src*="pagead"]'
+    'iframe[src*="pagead"]',
+    'script[src*="ads"]',
+    'script[src*="advertisement"]',
+    '[class*="advert"]',
+    '[class*="advertising"]',
+    '[class*="promoted"]',
+    '[class*="promote"]',
+    '[class*="promotional"]',
+    '[class*="promo"]',
+    '[class*="modal"]',
+    '[class*="popup"]',
+    '[class*="overlay"]',
+    '[class*="notification"]',
+    '[class*="toast"]',
+    '[class*="social-share"]',
+    '[class*="share-button"]',
+    '[class*="shareicon"]',
+    '[class*="social"]'
   ];
   
   distractingSelectors.forEach(selector => {
