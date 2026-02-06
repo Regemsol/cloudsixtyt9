@@ -1,3 +1,15 @@
+/* Animation definitions */
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* This class hides elements that are distracting */
 .focus-shield-hidden {
   display: none !important;
@@ -25,6 +37,7 @@
   z-index: 999998;
   font-family: system-ui, -apple-system, sans-serif;
   overflow: auto;
+  animation: slideInDown 0.35s ease-out;
 }
 
 .summary-bullets li {
