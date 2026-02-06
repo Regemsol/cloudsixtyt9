@@ -46,6 +46,12 @@ function activateSimpleMode() {
     element.classList.remove('focus-shield-hidden');
   });
   
+  // Remove any highlighting
+  const highlighting = document.querySelectorAll('.focus-shield-highlighted');
+  highlighting.forEach(element => {
+    element.classList.remove('focus-shield-highlighted');
+  });
+  
   currentMode = "simple";
   
   // Common selectors for ads and distracting elements
@@ -159,7 +165,34 @@ function activateFocusMode() {
     element.classList.remove('focus-shield-hidden');
   });
   
+  // Remove any existing highlighting first
+  const oldHighlight = document.querySelectorAll('.focus-shield-highlighted');
+  oldHighlight.forEach(element => {
+    element.classList.remove('focus-shield-highlighted');
+  });
+  
   currentMode = "focus";
+  
+  // Find and highlight main content
+  const mainContentSelectors = [
+    'main',
+    'article',
+    '[role="main"]',
+    '.post-content',
+    '.article-content',
+    '#content',
+    '.content'
+  ];
+  
+  let mainContent = null;
+  for (let selector of mainContentSelectors) {
+    mainContent = document.querySelector(selector);
+    if (mainContent) break;
+  }
+  
+  if (mainContent) {
+    mainContent.classList.add('focus-shield-highlighted');
+  }
   
   // Comprehensive ad selector list - catches all ads on the page
   const ads = [
@@ -240,6 +273,12 @@ function deactivateAllModes() {
   const hiddenElements = document.querySelectorAll('.focus-shield-hidden');
   hiddenElements.forEach(element => {
     element.classList.remove('focus-shield-hidden');
+  });
+  
+  // Remove highlight from main content
+  const highlighting = document.querySelectorAll('.focus-shield-highlighted');
+  highlighting.forEach(element => {
+    element.classList.remove('focus-shield-highlighted');
   });
   
   // Remove summary box
@@ -365,25 +404,37 @@ function generateAndDisplaySummary() {
     if (!contentText) return;
     
     // Extract sentences and create summary
-    const sentences = contentText.match(/[^.!?]+[.!?]+(?=\s+|$)/g) || [];
-    const summaryLength = Math.ceil(sentences.length * 0.3); // 30% of content
-    const summaryText = sentences.slice(0, Math.max(3, summaryLength)).join(' ').trim();
+    // Extract key points (sentences that look like they contain useful info)
+    const sentences = contentText.match(/[^.!?]+[.!?]+/g) || [];
     
-    if (summaryText.length < 50) return; // Too short to summarize
+    // Filter and shorten sentences to key points
+    const keyPoints = sentences
+      .filter(s => s.trim().length > 20) // Only meaningful sentences
+      .map(s => s.trim().slice(0, 120)) // Limit each point to 120 chars
+      .slice(0, 5); // Show only top 5 points
+    
+    if (keyPoints.length === 0) return; // Not enough content
     
     // Create summary box
     summaryElement = document.createElement('div');
     summaryElement.className = 'focus-shield-summary';
+    
+    const bulletPoints = keyPoints
+      .map(point => `<li>${point}${point.length === 120 ? '...' : ''}</li>`)
+      .join('');
+    
     summaryElement.innerHTML = `
       <div class="summary-header">
-        <strong>📝 Content Summary</strong>
+        <strong>📝 Key Points</strong>
         <button class="close-summary" onclick="this.parentElement.parentElement.remove()">✕</button>
       </div>
-      <div class="summary-content">${summaryText}...</div>
+      <div class="summary-content">
+        <ul class="summary-bullets">${bulletPoints}</ul>
+      </div>
     `;
     
     document.body.insertBefore(summaryElement, document.body.firstChild);
-    console.log("Focus Shield: Summary generated");
+    console.log("Focus Shield: Summary generated with key points");
   } catch (error) {
     console.error("Focus Shield: Error generating summary", error);
   }

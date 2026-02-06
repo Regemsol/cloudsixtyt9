@@ -3,6 +3,14 @@
   display: none !important;
 }
 
+/* Highlight main content in Focus Mode */
+.focus-shield-highlighted {
+  background-color: #fffef0 !important;
+  border-left: 5px solid #2196F3 !important;
+  padding-left: 15px !important;
+  box-shadow: 0 0 10px rgba(33, 150, 243, 0.1) !important;
+}
+
 /* Summary box styling for Simple Mode */
 .focus-shield-summary {
   position: fixed;
@@ -17,6 +25,13 @@
   z-index: 999998;
   font-family: system-ui, -apple-system, sans-serif;
   overflow: auto;
+}
+
+.summary-bullets li {
+  margin-bottom: 8px;
+  line-height: 1.5;
+  color: #333;
+  font-size: 13px;
 }
 
 .summary-header {
@@ -53,6 +68,12 @@
   font-size: 13px;
   line-height: 1.6;
   color: #333;
+}
+
+.summary-bullets {
+  list-style: disc;
+  padding-left: 20px;
+  margin: 0;
 }
 
 /* Status indicators */
