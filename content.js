@@ -27,6 +27,20 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 // SIMPLE MODE: Remove ads + show content summary
 function activateSimpleMode() {
   console.log("Simple Mode activated");
+  
+  // Clean up any previous mode
+  stopMutationObserver();
+  if (summaryElement && summaryElement.parentNode) {
+    summaryElement.remove();
+    summaryElement = null;
+  }
+  
+  // Remove all hidden elements first
+  const hiddenElements = document.querySelectorAll('.focus-shield-hidden');
+  hiddenElements.forEach(element => {
+    element.classList.remove('focus-shield-hidden');
+  });
+  
   currentMode = "simple";
   
   // Common selectors for ads and distracting elements
@@ -126,6 +140,19 @@ function activateSimpleMode() {
 // FOCUS MODE: Only removes ads (clean reading)
 function activateFocusMode() {
   console.log("Focus Mode activated");
+  
+  // Clean up any previous mode
+  if (summaryElement && summaryElement.parentNode) {
+    summaryElement.remove();
+    summaryElement = null;
+  }
+  
+  // Remove all hidden elements first
+  const hiddenElements = document.querySelectorAll('.focus-shield-hidden');
+  hiddenElements.forEach(element => {
+    element.classList.remove('focus-shield-hidden');
+  });
+  
   currentMode = "focus";
   
   // Just hide ads and distracting elements
@@ -198,7 +225,8 @@ function deactivateAllModes() {
 
 // MutationObserver to catch dynamically-injected ads
 function startMutationObserver() {
-  if (mutationObserver) return; // Already watching
+  // Stop any existing observer first
+  stopMutationObserver();
   
   mutationObserver = new MutationObserver((mutations) => {
     // Rerun ad hiding on mutations (but throttle to avoid performance issues)
@@ -222,6 +250,7 @@ function startMutationObserver() {
 }
 
 function stopMutationObserver() {
+  clearTimeout(window.focusShieldTimeout);
   if (mutationObserver) {
     mutationObserver.disconnect();
     mutationObserver = null;
